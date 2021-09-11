@@ -11,6 +11,7 @@ interface Home {
     }
 
     sealed class Command {
+        object Initial : Command()
         object Create : Command()
         data class ProblemSelected(
             val problem: Problem,

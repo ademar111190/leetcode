@@ -6,9 +6,9 @@ import ademar.leetcode.model.Problem
 import android.util.LruCache
 import io.reactivex.rxjava3.core.Single
 
-object ProblemStorage {
-
-    private val lruCache = LruCache<Long, Problem>(4)
+class ProblemStorage(
+    private val lruCache: LruCache<Long, Problem>,
+) {
 
     fun fetchProblems(): Single<List<Problem>> {
         return Single.just(

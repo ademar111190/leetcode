@@ -2,18 +2,20 @@ package ademar.leetcode.page.home
 
 import ademar.leetcode.storage.ProblemStorage
 import ademar.leetcode.usecase.NavigatorUseCase
+import ademar.leetcode.usecase.RxFactoryUseCase
 import ademar.leetcode.usecase.ThrowableMessageUseCase
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.Subject
+import javax.inject.Inject
 
-class HomeInteractor(
+class HomeInteractor @Inject constructor(
     private val problemStorage: ProblemStorage,
     private val messages: ThrowableMessageUseCase,
     private val navigator: NavigatorUseCase,
+    rxFactory: RxFactoryUseCase,
 ) {
 
-    private val subs = CompositeDisposable()
-    val output = BehaviorSubject.createDefault<Home.State>(Home.State.Load)
+    private val subs = rxFactory.makeCompositeDisposable()
+    val output: Subject<Home.State> = rxFactory.makeBehaviourSubject(Home.State.Load)
 
     fun bind(home: Home.View) {
         subs.add(home.output.subscribe(::map) {
@@ -27,6 +29,8 @@ class HomeInteractor(
 
     private fun map(command: Home.Command) {
         when (command) {
+            is Home.Command.Initial -> Unit
+
             is Home.Command.Create -> {
                 output.onNext(Home.State.Load)
                 subs.add(problemStorage.fetchProblems().subscribe({ problems ->

@@ -2,6 +2,7 @@ package ademar.leetcode.page.detail
 
 import ademar.leetcode.R
 import ademar.leetcode.storage.ProblemStorage
+import ademar.leetcode.usecase.RxFactoryUseCase
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -9,12 +10,16 @@ import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
 
-    val subs = CompositeDisposable()
-    val storage = ProblemStorage
+    private val subs by lazy { rxFactory.makeCompositeDisposable() }
+
+    @Inject lateinit var storage: ProblemStorage
+    @Inject lateinit var rxFactory: RxFactoryUseCase
 
     private val content: View
         get() = findViewById(R.id.content)
@@ -44,11 +49,11 @@ class DetailActivity : AppCompatActivity() {
         if (problemId == null) {
             setState(DetailError("No id found"))
         } else {
-            storage.get(problemId).subscribe({ problem ->
+            subs.add(storage.get(problemId).subscribe({ problem ->
                 setState(DetailSuccess(problem))
             }, {
                 setState(DetailError(it.message ?: it.stackTrace.toString()))
-            })
+            }))
         }
     }
 

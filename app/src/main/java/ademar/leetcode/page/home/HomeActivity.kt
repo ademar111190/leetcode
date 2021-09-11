@@ -1,9 +1,7 @@
 package ademar.leetcode.page.home
 
 import ademar.leetcode.R
-import ademar.leetcode.storage.ProblemStorage
-import ademar.leetcode.usecase.NavigatorUseCase
-import ademar.leetcode.usecase.ThrowableMessageUseCase
+import ademar.leetcode.usecase.RxFactoryUseCase
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -11,19 +9,17 @@ import android.view.View.VISIBLE
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.subjects.Subject
-import java.lang.ref.WeakReference
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeActivity : AppCompatActivity(), Home.View {
 
-    private val subs = CompositeDisposable()
-    val interactor = HomeInteractor(
-        ProblemStorage,
-        ThrowableMessageUseCase(),
-        NavigatorUseCase(WeakReference(this)),
-    )
+    private val subs by lazy { rxFactory.makeCompositeDisposable() }
+
+    @Inject lateinit var interactor: HomeInteractor
+    @Inject lateinit var rxFactory: RxFactoryUseCase
 
     private val recycler: RecyclerView
         get() = findViewById(R.id.recycler)
@@ -78,6 +74,8 @@ class HomeActivity : AppCompatActivity(), Home.View {
         }
     }
 
-    override val output: Subject<Home.Command> = BehaviorSubject.create()
+    override val output: Subject<Home.Command> by lazy {
+        rxFactory.makeBehaviourSubject(Home.Command.Initial)
+    }
 
 }
