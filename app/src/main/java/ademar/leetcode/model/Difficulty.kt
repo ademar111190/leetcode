@@ -1,5 +1,6 @@
-package ademar.leetcode
+package ademar.leetcode.model
 
+import ademar.leetcode.R
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 

@@ -1,12 +1,14 @@
-package ademar.leetcode
+package ademar.leetcode.page.home
 
+import ademar.leetcode.model.Problem
+import ademar.leetcode.R
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 class HomeAdapter(
-    private val items: List<HomeItem>,
-    private val callback: (HomeItem) -> Unit,
+    private val items: List<Problem>,
+    private val callback: (Problem) -> Unit,
 ) : RecyclerView.Adapter<HomeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {

@@ -1,5 +1,7 @@
-package ademar.leetcode
+package ademar.leetcode.page.home
 
+import ademar.leetcode.model.Problem
+import ademar.leetcode.R
 import android.content.Context
 import android.view.View
 import android.widget.ImageView
@@ -8,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 
 class HomeViewHolder(
     view: View,
-    private val callback: (HomeItem) -> Unit,
+    private val callback: (Problem) -> Unit,
 ) : RecyclerView.ViewHolder(view) {
 
-    private var item: HomeItem? = null
+    private var item: Problem? = null
 
     init {
         view.setOnClickListener {
@@ -19,7 +21,7 @@ class HomeViewHolder(
         }
     }
 
-    fun bind(item: HomeItem) {
+    fun bind(item: Problem) {
         this.item = item
         val title = itemView.findViewById<TextView>(R.id.title)
         val difficulty = itemView.findViewById<ImageView>(R.id.difficulty)

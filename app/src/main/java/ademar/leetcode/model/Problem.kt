@@ -1,6 +1,6 @@
-package ademar.leetcode
+package ademar.leetcode.model
 
-data class HomeItem(
+data class Problem(
     val title: String,
     val description: String,
     val difficulty: Difficulty,

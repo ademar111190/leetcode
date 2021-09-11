@@ -1,7 +1,11 @@
-package ademar.leetcode
+package ademar.leetcode.page.home
 
+import ademar.leetcode.R
+import ademar.leetcode.model.Difficulty
+import ademar.leetcode.model.Problem
+import ademar.leetcode.page.detail.DetailActivity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +20,7 @@ class HomeActivity : AppCompatActivity() {
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = HomeAdapter(
             items = listOf(
-                HomeItem(
+                Problem(
                     title = "1. Two Sum",
                     description = """
                         Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
@@ -27,7 +31,7 @@ class HomeActivity : AppCompatActivity() {
                 ),
             ),
             callback = {
-                Log.d("Home", "$it")
+                startActivity(Intent(this, DetailActivity::class.java))
             }
         )
     }
