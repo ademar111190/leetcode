@@ -1,10 +1,9 @@
 package ademar.leetcode.page.home
 
 import ademar.leetcode.R
-import ademar.leetcode.page.detail.DetailActivity
-import ademar.leetcode.page.detail.PROBLEM_ID
 import ademar.leetcode.storage.ProblemStorage
-import android.content.Intent
+import ademar.leetcode.usecase.NavigatorUseCase
+import ademar.leetcode.usecase.ThrowableMessageUseCase
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -13,11 +12,18 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.Subject
+import java.lang.ref.WeakReference
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(), Home.View {
 
-    val subs = CompositeDisposable()
-    val storage = ProblemStorage
+    private val subs = CompositeDisposable()
+    val interactor = HomeInteractor(
+        ProblemStorage,
+        ThrowableMessageUseCase(),
+        NavigatorUseCase(WeakReference(this)),
+    )
 
     private val recycler: RecyclerView
         get() = findViewById(R.id.recycler)
@@ -32,22 +38,25 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_activity)
 
-        setState(HomeLoad)
-        subs.add(storage.fetchProblems().subscribe({ problems ->
-            setState(HomeSuccess(problems))
-        }, {
-            setState(HomeError(it.message ?: it.stackTrace.toString()))
-        }))
+        subs.add(interactor.output.subscribe(::input))
+        interactor.bind(this)
+        output.onNext(Home.Command.Create)
     }
 
-    fun setState(state: HomeState) = when (state) {
-        is HomeLoad -> {
+    override fun onDestroy() {
+        super.onDestroy()
+        interactor.unBind()
+        subs.clear()
+    }
+
+    override fun input(state: Home.State) = when (state) {
+        is Home.State.Load -> {
             load.visibility = VISIBLE
             error.visibility = GONE
             recycler.visibility = GONE
         }
 
-        is HomeError -> {
+        is Home.State.Error -> {
             load.visibility = GONE
             error.visibility = VISIBLE
             recycler.visibility = GONE
@@ -55,7 +64,7 @@ class HomeActivity : AppCompatActivity() {
             error.text = state.message
         }
 
-        is HomeSuccess -> {
+        is Home.State.Success -> {
             load.visibility = GONE
             error.visibility = GONE
             recycler.visibility = VISIBLE
@@ -63,18 +72,12 @@ class HomeActivity : AppCompatActivity() {
             recycler.adapter = HomeAdapter(
                 items = state.items,
                 callback = { problem ->
-                    storage.put(problem)
-                    val intent = Intent(this, DetailActivity::class.java)
-                    intent.putExtra(PROBLEM_ID, problem.id)
-                    startActivity(intent)
+                    output.onNext(Home.Command.ProblemSelected(problem))
                 }
             )
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        subs.clear()
-    }
+    override val output: Subject<Home.Command> = BehaviorSubject.create()
 
 }
