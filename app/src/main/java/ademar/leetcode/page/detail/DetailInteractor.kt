@@ -1,6 +1,7 @@
 package ademar.leetcode.page.detail
 
 import ademar.leetcode.storage.ProblemStorage
+import ademar.leetcode.usecase.NavigatorUseCase
 import ademar.leetcode.usecase.RxFactoryUseCase
 import ademar.leetcode.usecase.ThrowableMessageUseCase
 import io.reactivex.rxjava3.subjects.Subject
@@ -9,6 +10,7 @@ import javax.inject.Inject
 class DetailInteractor @Inject constructor(
     private val problemStorage: ProblemStorage,
     private val messages: ThrowableMessageUseCase,
+    private val navigatorUseCase: NavigatorUseCase,
     rxFactory: RxFactoryUseCase,
 ) {
 

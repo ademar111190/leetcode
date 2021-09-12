@@ -1,8 +1,10 @@
 package ademar.leetcode.storage
 
+import ademar.leetcode.model.ADD_TWO_NUMBERS
 import ademar.leetcode.model.Difficulty.EASY
 import ademar.leetcode.model.Difficulty.MEDIUM
 import ademar.leetcode.model.Problem
+import ademar.leetcode.model.TWO_SUM
 import android.util.LruCache
 import io.reactivex.rxjava3.core.Single
 
@@ -14,7 +16,7 @@ class ProblemStorage(
         return Single.just(
             listOf(
                 Problem(
-                    id = 1L,
+                    id = TWO_SUM,
                     title = "1. Two Sum",
                     description = """
                         Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
@@ -24,7 +26,7 @@ class ProblemStorage(
                     difficulty = EASY,
                 ),
                 Problem(
-                    id = 2L,
+                    id = ADD_TWO_NUMBERS,
                     title = "2. Add Two Numbers",
                     description = """
                         You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.

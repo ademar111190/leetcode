@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference
 class NavigatorUseCase(
     private val host: WeakReference<Activity>,
 ) {
+
     fun openDetail(problemId: Long): Boolean {
         val activity = host.get()
         return if (activity == null) {
@@ -20,4 +21,15 @@ class NavigatorUseCase(
             true
         }
     }
+
+    fun showProblem(problemId: Long): Boolean {
+        val activity = host.get()
+        return if (activity == null) {
+            false
+        } else {
+            // TODO show fragment
+            false
+        }
+    }
+
 }

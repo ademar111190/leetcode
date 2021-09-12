@@ -3,4 +3,5 @@
     <string name="content_description_difficulty_easy">Fácil</string>
     <string name="content_description_difficulty_medium">Médio</string>
     <string name="content_description_difficulty_hard">Difícil</string>
+    <string name="problem_not_found_message">Problema não encontrado</string>
 </resources>
