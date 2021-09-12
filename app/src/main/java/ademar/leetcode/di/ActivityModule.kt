@@ -1,6 +1,8 @@
 package ademar.leetcode.di
 
 import ademar.leetcode.di.ActivityModule.Declarations
+import ademar.leetcode.page.detail.Detail
+import ademar.leetcode.page.detail.DetailActivity
 import ademar.leetcode.page.home.Home
 import ademar.leetcode.page.home.HomeActivity
 import ademar.leetcode.usecase.NavigatorUseCase
@@ -29,6 +31,9 @@ class ActivityModule {
     interface Declarations {
         @Binds
         fun bindHomeView(a: HomeActivity): Home.View
+
+        @Binds
+        fun bindDetailView(a: DetailActivity): Detail.View
     }
 
 }

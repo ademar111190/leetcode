@@ -1,7 +1,6 @@
 package ademar.leetcode.page.detail
 
 import ademar.leetcode.R
-import ademar.leetcode.storage.ProblemStorage
 import ademar.leetcode.usecase.RxFactoryUseCase
 import android.os.Bundle
 import android.view.View
@@ -11,14 +10,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.subjects.Subject
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : AppCompatActivity(), Detail.View {
 
     private val subs by lazy { rxFactory.makeCompositeDisposable() }
 
-    @Inject lateinit var storage: ProblemStorage
+    @Inject lateinit var interactor: DetailInteractor
     @Inject lateinit var rxFactory: RxFactoryUseCase
 
     private val content: View
@@ -43,22 +43,19 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.detail_activity)
 
-        setState(DetailLoad)
-
-        val problemId = intent.extras?.getLong(PROBLEM_ID)
-        if (problemId == null) {
-            setState(DetailError("No id found"))
-        } else {
-            subs.add(storage.get(problemId).subscribe({ problem ->
-                setState(DetailSuccess(problem))
-            }, {
-                setState(DetailError(it.message ?: it.stackTrace.toString()))
-            }))
-        }
+        subs.add(interactor.output.subscribe(::input))
+        interactor.bind(this)
+        output.onNext(Detail.Command.Create(intent.extras?.getLong(PROBLEM_ID)))
     }
 
-    fun setState(state: DetailState) = when (state) {
-        is DetailError -> {
+    override fun onDestroy() {
+        super.onDestroy()
+        interactor.unBind()
+        subs.clear()
+    }
+
+    override fun input(state: Detail.State) = when (state) {
+        is Detail.State.Error -> {
             load.visibility = GONE
             error.visibility = VISIBLE
             content.visibility = GONE
@@ -66,13 +63,13 @@ class DetailActivity : AppCompatActivity() {
             error.text = state.message
         }
 
-        is DetailLoad -> {
+        is Detail.State.Load -> {
             load.visibility = VISIBLE
             error.visibility = GONE
             content.visibility = GONE
         }
 
-        is DetailSuccess -> {
+        is Detail.State.Success -> {
             load.visibility = GONE
             error.visibility = GONE
             content.visibility = VISIBLE
@@ -82,6 +79,10 @@ class DetailActivity : AppCompatActivity() {
             description.text = problem.description
             image.setImageResource(problem.difficulty.image)
         }
+    }
+
+    override val output: Subject<Detail.Command> by lazy {
+        rxFactory.makeBehaviourSubject(Detail.Command.Initial)
     }
 
 }

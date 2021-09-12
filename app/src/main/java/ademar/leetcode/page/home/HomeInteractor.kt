@@ -29,7 +29,9 @@ class HomeInteractor @Inject constructor(
 
     private fun map(command: Home.Command) {
         when (command) {
-            is Home.Command.Initial -> Unit
+            is Home.Command.Initial -> {
+                output.onNext(Home.State.Load)
+            }
 
             is Home.Command.Create -> {
                 output.onNext(Home.State.Load)
